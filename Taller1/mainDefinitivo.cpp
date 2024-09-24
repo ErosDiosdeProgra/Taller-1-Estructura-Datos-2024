@@ -2,6 +2,7 @@
 #include "Revista.h"
 #include "Usuario.h"
 #include <iostream>
+#include <fstream>
 #include <array>
 using namespace std;
 
@@ -24,7 +25,7 @@ int mostrarOpciones(){
 }
 
 void agregarLibro(MaterialBibliografico* biblioteca[], int c){
-    if(c >= 10){
+    if(c >= 100){
         cout << "La Biblioteca está llena, NO se pueden añadir más Libros." << endl;
         return;
     }
@@ -47,7 +48,7 @@ void agregarLibro(MaterialBibliografico* biblioteca[], int c){
 }
 
 void agregarRevista(MaterialBibliografico* biblioteca[], int c){
-    if(c >= 10){
+    if(c >= 100){
         cout << "La Biblioteca está llena, NO se pueden añadir más Revistas." << endl;
         return;
     }
@@ -69,7 +70,7 @@ void agregarRevista(MaterialBibliografico* biblioteca[], int c){
 }
 
 void registrarUsuario(Usuario* usuarios[], int c){          //estoy usando la misma logica que los otros, si total es crear un objeto dentro de un registro
-    if(c >= 10){
+    if(c >= 100){
         cout << "La base de usuarios está completa, NO se pueden añadir más usuarios." << endl;
         return;
     } 
@@ -106,12 +107,76 @@ void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay
     cout << "\nEl usuario se ha eliminado existosamente!\n" << endl;
 }
 
+void guardarDatos(MaterialBibliografico* biblioteca[] ,int c){
+    ofstream archivo("materiales.txt");
+    if(!archivo){
+        cout << "No se pudo guardar la información de la biblioteca" << endl;
+        return;
+    }
+
+    archivo << c << endl;
+    for (int i = 0; i < c; ++i) {
+        Libro* libro = dynamic_cast<Libro*>(biblioteca[i]);
+        Revista* revista = dynamic_cast<Revista*>(biblioteca[i]);
+
+        if (libro) {
+            archivo << "Libro\n" << libro->getNombre() << "\n" << libro->getAutor() << "\n"
+                    << libro->estaPrestado() << "\n";
+            // Guardar otros atributos de Libro
+        } else if (revista) {
+            archivo << "Revista\n" << revista->getNombre() << "\n" << revista->getAutor() << "\n"
+                    << revista->estaPrestado() << "\n";
+            // Guardar otros atributos de Revista
+        }
+    }
+
+    archivo.close();
+    cout << "Biblioteca guardada exitosamente.\n";
+}
+
+void cargarDatos(MaterialBibliografico* biblioteca[], int c){
+    ifstream archivo("materiales.txt");
+    if (!archivo) {
+        cout << "No se pudo abrir el archivo de los Materiales.\n";
+        return;
+    }
+
+    archivo >> c;
+    archivo.ignore(); // Ignorar el salto de línea
+
+    for (int i = 0; i < c; ++i) {
+        string tipo, nombre, autor;
+        bool prestado;
+
+        getline(archivo, tipo);
+        getline(archivo, nombre);
+        getline(archivo, autor);
+        archivo >> prestado;
+        archivo.ignore();  // Ignorar el salto de línea
+
+        if (tipo == "Libro") {
+            // Leer otros atributos del libro
+            biblioteca[i] = new Libro(nombre, "", autor, "", "");  // Añadir los valores correctos
+        } else if (tipo == "Revista") {
+            // Leer otros atributos de la revista
+            biblioteca[i] = new Revista(nombre, "", autor, 0, "");  // Añadir los valores correctos
+        }
+
+        if (prestado) {
+            biblioteca[i]->prestar();
+        }
+    }
+
+    archivo.close();
+    cout << "Biblioteca cargada exitosamente.\n";
+}
+
 int main(){
     //aqui linea de codigo para cargar los archivos txt (creo que ya entendi como o eso espero)
 
-    Usuario* usuarios[10];
+    Usuario* usuarios[100] = {nullptr};
     int contadorUsuarios = 0;
-    MaterialBibliografico* biblioteca[10] = {nullptr};  //lo voy creando acá pero no se si por ejemplo quieres crear otra clase
+    MaterialBibliografico* biblioteca[100] = {nullptr};  //lo voy creando acá pero no se si por ejemplo quieres crear otra clase
     int contador = 0;                 //tipo biblioteca o algo asi y ahí ir creando las listas de material y usuarios
 
     bool menu = true;

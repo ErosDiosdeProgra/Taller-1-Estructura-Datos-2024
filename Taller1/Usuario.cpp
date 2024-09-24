@@ -27,3 +27,10 @@ bool Usuario :: prestarMaterial(MaterialBibliografico* material){
 bool Usuario :: devolverMaterial(MaterialBibliografico* material){
     return false;
 }
+
+void Usuario :: mostrarMaterialesPrestados(){
+    cout << nombre << " tiene los siguientes materiales prestados" << endl;
+    for(int i = 0; i < materialPrestado; i++){
+        materialesPrestados[i] -> mostrarInformacion();
+    }
+}
