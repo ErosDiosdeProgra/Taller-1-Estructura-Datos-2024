@@ -24,6 +24,9 @@ bool Usuario :: prestarMaterial(MaterialBibliografico* material){
     return true;
 }
 
+string Usuario :: getNombre(){return nombre;}
+string Usuario :: getId(){return id;}
+
 bool Usuario :: devolverMaterial(MaterialBibliografico* material){
     return false;
 }
@@ -34,3 +37,5 @@ void Usuario :: mostrarMaterialesPrestados(){
         materialesPrestados[i] -> mostrarInformacion();
     }
 }
+
+Usuario :: ~Usuario(){}

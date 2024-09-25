@@ -3,7 +3,6 @@
 #include "Usuario.h"
 #include <iostream>
 #include <fstream>
-#include <array>
 using namespace std;
 
 int mostrarOpciones(){              
@@ -87,25 +86,49 @@ void registrarUsuario(Usuario* usuarios[], int c){          //estoy usando la mi
     cout << "\nEl usuario se ha registrado existosamente!\n" << endl;
 }
 
-Usuario* buscarUsuario(string nom, string id, Usuario* usuarios[], int c) {     //lo que busco aqui es que mediante el nombre e id que nos den
-    for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
-    {                                                                          // if(nom == this -> nom) { return usuarios[i] }
-        
-    }
-}
-
-void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay que pedirle QUE usuario quiere eliminar, asi que hay que usar una funcion logica XD
+Usuario* buscarUsuario(Usuario* usuarios[], int c) {     //lo que busco aqui es que mediante el nombre e id que nos den
     string nom, id;
-    cout << "Escriba el nombre del usuario que desea eliminar:";
+    cout << "Escriba el nombre del usuario que esta buscando: ";
     cin.ignore();
     getline(cin, nom);
-    cout<< "Escriba el ID del usuario que desea eliminar:";
+    cout << "Escriba el Id del usuario que esta buscando: ";
     cin.ignore();
     getline(cin, id);
-    
-                                            //aqui iria la funcion de buscar usuarios                                            
-    cout << "\nEl usuario se ha eliminado existosamente!\n" << endl;
+    for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
+    {                                                                          // if(nom == this -> nom) { return usuarios[i] }
+        if(nom == usuarios[i]->getNombre() && id == usuarios[i]->getId())
+        {
+            return usuarios[i];
+        }
+    }
+    return nullptr;
 }
+
+    void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay que pedirle QUE usuario quiere eliminar, asi que hay que usar una funcion logica XD
+    string nom, id;                                                                           //copie y pegue la logica de arriba ya que volviendolo funcion me devolveria
+        cout << "Escriba el nombre del usuario que esta buscando: ";                          //el objeto, pero es mejor eliminarla altiro en la busqueda (pq me da la i)
+        cin.ignore();
+        getline(cin, nom);
+        cout << "Escriba el Id del usuario que esta buscando: ";
+        cin.ignore();
+        getline(cin, id);
+        cout <<"has llegado aqui"<<endl;
+        for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
+        {                                                                          // if(nom == this -> nom) { return usuarios[i] }
+            if(nom == usuarios[i]->getNombre() && id == usuarios[i]->getId())
+            {
+                delete usuarios[i];
+                for (int j = i; j < c-1; j++)
+                {
+                    usuarios[j] = usuarios[j+1];
+                }
+                usuarios[c -1] = nullptr;
+                cout << "\nEl usuario se ha eliminado existosamente!\n" << endl;
+                return;
+            }
+        }                                                                                                             
+        cout << "\nEl usuario no existe!\n" << endl;
+    }
 
 void guardarDatos(MaterialBibliografico* biblioteca[] ,int c){
     ofstream archivo("materiales.txt");
@@ -173,7 +196,7 @@ void cargarDatos(MaterialBibliografico* biblioteca[], int c){
 
 int main(){
     //aqui linea de codigo para cargar los archivos txt (creo que ya entendi como o eso espero)
-
+    Usuario* temp;
     Usuario* usuarios[100] = {nullptr};
     int contadorUsuarios = 0;
     MaterialBibliografico* biblioteca[100] = {nullptr};  //lo voy creando acá pero no se si por ejemplo quieres crear otra clase
@@ -204,9 +227,13 @@ int main(){
                 break;
 
             case 4:
-                //buscarUsuario();                        //necesito buscarUsuario para eliminarlo en primer lugar
+                temp = buscarUsuario(usuarios, contadorUsuarios);                        //necesito buscarUsuario para eliminarlo en primer lugar
+                if (temp != nullptr) {
+                    cout << "Usuario encontrado: " << temp->getNombre() << endl;
+                } else {
+                    cout << "Usuario no encontrado." << endl;
+                }
                 break;
-                //sizeof
             case 5:
             if (contadorUsuarios == 0)
             {
