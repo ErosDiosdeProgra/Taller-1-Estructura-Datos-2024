@@ -3,6 +3,8 @@
 #include "Usuario.h"
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
+#include <limits>
 using namespace std;
 
 int mostrarOpciones(){              
@@ -19,6 +21,13 @@ int mostrarOpciones(){
     cin >> op;
     cout << " " << endl;
     cout << " " << endl;
+
+
+    if (cin.fail()) {
+        cin.clear(); // Entre el fail y el clear, se encargan de ver si falla la entrada (por pedir un int y que nos den otro tipo) y el clear "limpia" cin pa que no hayan errores
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); //se ignoran la mayor cantidad de numeros que se encuentren hasta un salto de linea (el enter u espacio)
+        throw invalid_argument("Entrada invalida, ingrese un numero");
+    }
 
     return op;
 }
@@ -204,54 +213,68 @@ int main(){
 
     bool menu = true;
     while(menu){
-        int opcion = mostrarOpciones();
-        switch(opcion){
-            case 0:
-                cout << "Cerrando Sistema..." << endl;
-                cout << " " << endl;
-                menu = false;
-                break;
-            
-            case 1:
-                agregarLibro(biblioteca, contador);
-                contador++;
-                break;
+        try {            
+            int opcion = mostrarOpciones();
+            switch(opcion){
+                case 0:
+                    cout << "Cerrando Sistema..." << endl;
+                    cout << " " << endl;
+                    menu = false;
+                    break;
+                
+                case 1:
+                    agregarLibro(biblioteca, contador);
+                    contador++;
+                    break;
 
-            case 2:
-                agregarRevista(biblioteca, contador);
-                break;
+                case 2:
+                    agregarRevista(biblioteca, contador);
+                    break;
 
-            case 3:
-                registrarUsuario(usuarios, contadorUsuarios); 
-                contadorUsuarios++;
-                break;
+                case 3:
+                    registrarUsuario(usuarios, contadorUsuarios); 
+                    contadorUsuarios++;
+                    break;
 
-            case 4:
-                temp = buscarUsuario(usuarios, contadorUsuarios);                        //necesito buscarUsuario para eliminarlo en primer lugar
-                if (temp != nullptr) {
-                    cout << "Usuario encontrado: " << temp->getNombre() << endl;
-                } else {
-                    cout << "Usuario no encontrado." << endl;
+                case 4:
+                    temp = buscarUsuario(usuarios, contadorUsuarios);                        //necesito buscarUsuario para eliminarlo en primer lugar
+                    if (temp != nullptr) {
+                        cout << "Usuario encontrado: " << temp->getNombre() << endl;
+                    } else {
+                        cout << "Usuario no encontrado." << endl;
+                        cout << " " << endl;
+                    }
+                    break;
+                case 5:
+                if (contadorUsuarios == 0)
+                {
+                    cout << "No se pueden eliminar usuarios, no hay usuarios registrados" << endl;    //control de error en caso de que un
+                } else {                                                                              //desquiciado quiera eliminar algo iniciando el programa
+                    eliminarUsuario(usuarios,contadorUsuarios);
+                    contadorUsuarios--;
                 }
-                break;
-            case 5:
-            if (contadorUsuarios == 0)
-            {
-                cout << "No se pueden eliminar usuarios, no hay usuarios registrados" << endl;    //control de error en caso de que un
-            } else {                                                                              //desquiciado quiera eliminar algo iniciando el programa
-                eliminarUsuario(usuarios,contadorUsuarios);
-                contadorUsuarios--;
-            }
-                break;
-            
-            case 6:
-                //mostrarLibrosRevistasUsuario();
-                break;
+                    break;
+                
+                case 6:
+                    temp = buscarUsuario(usuarios, contadorUsuarios);
+                    if (temp != nullptr) {
+                        cout << "Los materiales prestados del usuario: " << temp->getNombre() << "son: " << endl;
+                        temp->mostrarMaterialesPrestados();
+                    } else {
+                        cout << "Usuario no encontrado." << endl;
+                        cout << " " << endl;
+                    }
+                    break;
 
-            default:
-                cout << "Opción inválida. Intente nuevamente..." << endl;
-                cout << " " << endl;
-                cout << " " << endl;
+                default:
+                    cout << "Opción inválida. Intente nuevamente..." << endl;
+                    cout << " " << endl;
+                    cout << " " << endl;
+            }
+        } catch (const invalid_argument& e) {
+            cout << e.what() << endl; //el what devuelve un mensaje descriptivo, establecido mas arriba
+            cout << "Intentelo de nuevo"<< endl;
+            cout << " " << endl;
         }
     }
 
