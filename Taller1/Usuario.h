@@ -14,6 +14,8 @@ class Usuario {
         Usuario(string nombre, string id);
         string getNombre();
         string getId();
+        int getMaterialPrestado();
+        MaterialBibliografico* getMaterial(int i);
         bool prestarMaterial(MaterialBibliografico* material);             //estos 2 (prestar y devolver) deberian ser bool??
         bool devolverMaterial(MaterialBibliografico* material);
         void mostrarMaterialesPrestados();

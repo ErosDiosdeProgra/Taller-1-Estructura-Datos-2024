@@ -11,6 +11,9 @@ class MaterialBibliografico{
 
     public:
         MaterialBibliografico(string nombre, string isbn, string autor);
+        string getNombre();
+        string getIsbn();
+        string getAutor();
         bool estaPrestado();
         void prestar();
         void devolver();

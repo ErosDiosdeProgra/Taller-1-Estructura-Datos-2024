@@ -142,56 +142,62 @@ Usuario* buscarUsuario(Usuario* usuarios[], int c) {     //lo que busco aqui es 
 void guardarDatos(MaterialBibliografico* biblioteca[] ,int c){
     ofstream archivo("materiales.txt");
     if(!archivo){
-        cout << "No se pudo guardar la información de la biblioteca" << endl;
+        cout << "No se pudo guardar la información de la biblioteca ya que el archivo NO EXISTE!" << endl;
         return;
     }
 
-    archivo << c << endl;
-    for (int i = 0; i < c; ++i) {
+    archivo << c << endl;                //esto guarda cantidad de materiales tecnicamente
+    for (int i = 0; i < c; ++i) {        //tecnicamente esto funcionaria como un instanceof en JAVA para la lectura de la biblioteca...
         Libro* libro = dynamic_cast<Libro*>(biblioteca[i]);
         Revista* revista = dynamic_cast<Revista*>(biblioteca[i]);
 
         if (libro) {
-            archivo << "Libro\n" << libro->getNombre() << "\n" << libro->getAutor() << "\n"
-                    << libro->estaPrestado() << "\n";
-            // Guardar otros atributos de Libro
+            archivo << "Libro\n" << libro -> getNombre() << "\n" << libro -> getIsbn() << libro -> getAutor() << "\n"
+                    << libro -> estaPrestado() << "\n" << "\n" << libro -> getFechaPublicacion() << "\n" << libro -> getResumen();
+            
         } else if (revista) {
-            archivo << "Revista\n" << revista->getNombre() << "\n" << revista->getAutor() << "\n"
-                    << revista->estaPrestado() << "\n";
-            // Guardar otros atributos de Revista
+            archivo << "Revista\n" << revista -> getNombre() << "\n" << revista -> getIsbn() << "\n" << revista -> getAutor() << "\n"
+                    << revista -> estaPrestado() << "\n" << revista -> getMesPublicacion() << "\n" << revista -> getNumEdicion();
         }
     }
 
     archivo.close();
-    cout << "Biblioteca guardada exitosamente.\n";
+    cout << "Biblioteca guardada EXITOSAMENTE!" <<endl;
 }
 
 void cargarDatos(MaterialBibliografico* biblioteca[], int c){
     ifstream archivo("materiales.txt");
     if (!archivo) {
-        cout << "No se pudo abrir el archivo de los Materiales.\n";
+        cout << "No se pudo abrir el archivo de los Materiales ya que NO EXISTE!\n";
         return;
     }
 
     archivo >> c;
-    archivo.ignore(); // Ignorar el salto de línea
+    archivo.ignore(); 
 
     for (int i = 0; i < c; ++i) {
-        string tipo, nombre, autor;
+        string tipo, nombre, autor, isbn, fechaPublicacion, mesPublicacion, resumen;
+        int numeroEdicion;
         bool prestado;
 
         getline(archivo, tipo);
         getline(archivo, nombre);
+        getline(archivo, isbn);
         getline(archivo, autor);
         archivo >> prestado;
-        archivo.ignore();  // Ignorar el salto de línea
+        archivo.ignore();  
 
         if (tipo == "Libro") {
-            // Leer otros atributos del libro
-            biblioteca[i] = new Libro(nombre, "", autor, "", "");  // Añadir los valores correctos
+            getline(archivo, fechaPublicacion);
+            getline(archivo, resumen);
+
+            biblioteca[i] = new Libro(nombre, isbn, autor, fechaPublicacion, resumen);  
+
         } else if (tipo == "Revista") {
-            // Leer otros atributos de la revista
-            biblioteca[i] = new Revista(nombre, "", autor, 0, "");  // Añadir los valores correctos
+            getline(archivo, mesPublicacion);
+            archivo >> numeroEdicion;  //porque es int, al igual que con el bool ¿?
+
+            biblioteca[i] = new Revista(nombre, isbn, autor, numeroEdicion, mesPublicacion);  
         }
 
         if (prestado) {
@@ -200,7 +206,107 @@ void cargarDatos(MaterialBibliografico* biblioteca[], int c){
     }
 
     archivo.close();
-    cout << "Biblioteca cargada exitosamente.\n";
+    cout << "La Biblioteca ha sido cargada exitosamente!" << endl;
+}
+
+void guardarUsuarios(Usuario* usuarios[], int c){
+    ofstream archivo("Usuario.txt");
+    if(!archivo){
+        cout << "No se pudo guardar a los Usuarios debido a que NO EXISTE el archivo!" << endl;
+        return;
+    } 
+
+    archivo << c << endl;
+    for(int i = 0; i < c; ++i){
+        archivo << usuarios[i] -> getNombre() << endl;
+        archivo << usuarios[i] -> getId() << endl;
+        archivo << usuarios[i] -> getMaterialPrestado() << endl;
+
+        for(int j = 0; j < usuarios[i] -> getMaterialPrestado(); ++j){
+            MaterialBibliografico* material = usuarios[i] -> getMaterial(j);
+
+            if(Libro* libro = dynamic_cast<Libro*>(material)){
+                archivo << "Libro" << endl;
+                archivo << libro -> getNombre() << endl;
+                archivo << libro -> getIsbn() << endl;
+                archivo << libro -> getAutor() << endl;
+                archivo << libro -> getFechaPublicacion() << endl;
+                archivo << libro -> getResumen() << endl;
+            }
+
+            if(Revista* revista = dynamic_cast<Revista*>(material)){
+                archivo << "Revista" << endl;
+                archivo << revista -> getNombre() << endl;
+                archivo << revista -> getIsbn() << endl;
+                archivo << revista -> getAutor() << endl;
+                archivo << revista -> getMesPublicacion() << endl;
+                archivo << revista -> getNumEdicion() << endl;
+            }
+            archivo << material -> estaPrestado() << endl;
+        }
+    }
+    archivo.close();
+    cout << "Usuarios guardados EXISTOSAMENTE!" << endl;
+}
+
+void cargarUsuarios(Usuario* usuarios[], int c){
+    ifstream archivo("Usuarios.txt");
+    if(!archivo){
+        cout << "No se pudo abrir el archivo ya que NO EXISTE!" << endl;
+        return;
+    }
+
+    archivo >> c ;
+    archivo.ignore();
+
+    for(int i = 0; i < c; ++i){
+        string nombre, id;
+        int materialesPrestados;
+
+        getline(archivo, nombre);
+        getline(archivo, id);
+        archivo >> materialesPrestados;  //se supone va asi porque es int y no string
+        archivo.ignore();
+
+        usuarios[i] = new Usuario(nombre, id);
+        for(int j = 0; i < materialesPrestados; ++j){
+            string tipo, nombre, isbn, autor;
+            bool prestado;
+
+            getline(archivo, tipo);
+            getline(archivo, nombre);
+            getline(archivo, isbn);
+            getline(archivo, autor);
+            
+            if(tipo == "Libro"){
+                string fechaPublicacion, resumen;
+                getline(archivo, fechaPublicacion);
+                getline(archivo, resumen);
+
+                Libro* libro = new Libro(nombre, isbn, autor, fechaPublicacion, resumen);
+                usuarios[i] -> prestarMaterial(libro);
+            }
+
+            if(tipo == "Revista"){
+                string mesPublicacion;
+                int numeroEdicion;
+                getline(archivo, mesPublicacion);
+                archivo >> numeroEdicion;
+                archivo.ignore();
+                Revista* revista = new Revista(nombre, isbn, autor, numeroEdicion, mesPublicacion);
+                usuarios[i] -> prestarMaterial(revista);
+            }
+            
+
+            archivo >> prestado;
+            archivo.ignore();
+            if(prestado){
+                usuarios[i] -> getMaterial(j) -> prestar();  //ya que deberia decirle al material que esta prestado (parte usuario y biblioteca)
+            }
+        }
+    }
+    archivo.close();
+    cout << "Los usuarios se cargaron EXISTOSAMENTE!" << endl;
 }
 
 int main(){

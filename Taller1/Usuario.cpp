@@ -25,9 +25,25 @@ bool Usuario :: prestarMaterial(MaterialBibliografico* material){
 }
 
 string Usuario :: getNombre(){return nombre;}
+
 string Usuario :: getId(){return id;}
 
+int Usuario :: getMaterialPrestado(){return materialPrestado;}
+
 bool Usuario :: devolverMaterial(MaterialBibliografico* material){
+    if(materialPrestado == 0){
+        cout << "No tiene ningún Material Bibliográfico prestado!!" << endl;
+        cout << " " << endl;
+        return false;
+    }
+
+    for(int i = 0; i < materialPrestado; ++i){
+        if(materialesPrestados[i] == material){
+            materialesPrestados[i] -> devolver();
+            materialesPrestados[i] = materialesPrestados[--materialPrestado];
+            return true;
+        }
+    }
     return false;
 }
 
@@ -36,6 +52,14 @@ void Usuario :: mostrarMaterialesPrestados(){
     for(int i = 0; i < materialPrestado; i++){
         materialesPrestados[i] -> mostrarInformacion();
     }
+}
+
+MaterialBibliografico* Usuario :: getMaterial(int i){
+    if(i >= 0 && i < materialPrestado){
+        return materialesPrestados[i];
+    }
+
+    return nullptr;
 }
 
 Usuario :: ~Usuario(){}
