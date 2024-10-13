@@ -6,3 +6,9 @@ Integrantes:
 Eros Christian Cortés Varela   RUT: 19.949.826-6   correo: eros.cortes@alumnos.ucn.cl     paralelo: C1
 
 Branco Yasef Fernando Abalos Ortiz   RUT: 21.619.393-8    correo: branco.abalos@alumnos.ucn.cl   paralelo: C1
+
+Comando usado para compilar:
+
+g++ -g MaterialBibliografico.cpp Libro.cpp Revista.cpp Usuario.cpp mainDefinitivo.cpp  -o mainDefinitivo
+
+./mainDefinitivo.exe
