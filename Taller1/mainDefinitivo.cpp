@@ -349,7 +349,7 @@ void guardarUsuarios(Usuario* usuarios[], int c){
 donde despues va creando los objetos Usuario y tambien dependiendo de cuantos materiales tenga prestado
 los va creando y añadiendo a sus listas de materiales prestados (correspondiente a cada usuario)*/
 void cargarUsuarios(Usuario* usuarios[], int usu){
-    ifstream archivo("Usuarios.txt");
+    ifstream archivo("Usuario.txt");
     if(!archivo){
         cout << "No se pudo abrir el archivo ya que NO EXISTE!" << endl;
         return;
