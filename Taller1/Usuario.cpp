@@ -3,6 +3,9 @@
 using namespace std;
 
 Usuario :: Usuario(string nombre, string id) : nombre(nombre), id(id), materialPrestado(0){
+    for(int i = 0; i < 5; ++i){
+        materialesPrestados[i] = nullptr;
+    }
 }
 
 bool Usuario :: prestarMaterial(MaterialBibliografico* material){
@@ -40,7 +43,7 @@ bool Usuario :: devolverMaterial(MaterialBibliografico* material){
     for(int i = 0; i < materialPrestado; ++i){
         if(materialesPrestados[i] == material){
             materialesPrestados[i] -> devolver();
-            materialesPrestados[i] = materialesPrestados[--materialPrestado];
+            materialesPrestados[i] = materialesPrestados[--materialPrestado]; //esto es para mover el ultimo al espacio vacio
             return true;
         }
     }
@@ -62,4 +65,8 @@ MaterialBibliografico* Usuario :: getMaterial(int i){
     return nullptr;
 }
 
-Usuario :: ~Usuario(){}
+Usuario :: ~Usuario(){
+    for(int i = 0; i < 5; ++i){
+        delete materialesPrestados[i];  //para eliminar los punteros de la lista de materiales de cada usuario
+    }
+}
