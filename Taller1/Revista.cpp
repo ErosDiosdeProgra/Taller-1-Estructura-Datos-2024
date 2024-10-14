@@ -6,6 +6,7 @@ Revista :: Revista(string nombre, string isbn, string autor, int numeroEdicion, 
     : MaterialBibliografico(nombre, isbn, autor), numeroEdicion(numeroEdicion), mesPublicacion(mesPublicacion){
 }
 
+/*muestra la info de la revista*/
 void Revista :: mostrarInformacion(){
     cout << "Libro: " << nombre << " (ISBN: " << isbn << ")" << endl;
     cout << "Autor: " << autor << " (Publicado: " << mesPublicacion << ")" << endl;

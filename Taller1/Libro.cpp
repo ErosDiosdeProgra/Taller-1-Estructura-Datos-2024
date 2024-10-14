@@ -1,11 +1,13 @@
 #include "Libro.h"
 #include <iostream>
+#include <string>
 using namespace std;
 
 Libro :: Libro(string nombre, string isbn, string autor, string fechaPublicacion, string resumen) 
     : MaterialBibliografico(nombre, isbn, autor), fechaPublicacion(fechaPublicacion), resumen(resumen){
 }
 
+/*muestra la informacion del libro*/
 void Libro :: mostrarInformacion(){
     cout << "Libro: " << nombre << " (ISBN: " << isbn << ")" << endl;
     cout << "Autor: " << autor << " (Publicado: " << fechaPublicacion << ")" << endl;

@@ -14,9 +14,11 @@ string MaterialBibliografico :: getAutor(){return autor;}
 
 bool MaterialBibliografico :: estaPrestado(){return prestado;}
 
+/*cuando presta un material le asigna true*/
 void MaterialBibliografico :: prestar(){
     prestado = true;}
 
+/*cuando se devuelve un material le asigna false*/
 void MaterialBibliografico :: devolver(){
     prestado = false;}
 
