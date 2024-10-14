@@ -45,6 +45,7 @@ bool Usuario :: devolverMaterial(MaterialBibliografico* material){  //revisa si 
         if(materialesPrestados[i] == material){
             materialesPrestados[i] -> devolver();
             materialesPrestados[i] = materialesPrestados[--materialPrestado]; //esto es para mover el ultimo al espacio vacio
+            materialesPrestados[i] = materialesPrestados[--materialPrestado]; //esto es para mover el ultimo al espacio vacio
             return true;
         }
     }
@@ -67,6 +68,11 @@ MaterialBibliografico* Usuario :: getMaterial(int i){                           
     return nullptr;
 }
 
+Usuario :: ~Usuario(){
+    for(int i = 0; i < 5; ++i){
+        delete materialesPrestados[i];  //para eliminar los punteros de la lista de materiales de cada usuario
+    }
+}
 Usuario :: ~Usuario(){
     for(int i = 0; i < 5; ++i){
         delete materialesPrestados[i];  //para eliminar los punteros de la lista de materiales de cada usuario

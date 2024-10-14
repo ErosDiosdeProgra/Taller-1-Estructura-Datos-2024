@@ -10,11 +10,15 @@ using namespace std;
 /*Esta funcion imprime las opciones que tiene el menu
 y posee el control de errores en caso de que escriba algun dato que 
 no sea un entero*/
+/*Esta funcion imprime las opciones que tiene el menu
+y posee el control de errores en caso de que escriba algun dato que 
+no sea un entero*/
 int mostrarOpciones(){              
     cout << "**** Bienvenido al Sistema de Bibliotecas UCN ****" << endl;
     cout << "1. Agregar Libros" << endl;
     cout << "2. Agregar Revista" << endl;
     cout << "3. Registrar Usuario" << endl;
+    cout << "4. Agregar material a un usuario" << endl;
     cout << "4. Agregar material a un usuario" << endl;
     cout << "5. Eliminar Usuario" << endl;
     cout << "6. Mostrar Libros/Revistas prestados a Usuarios" << endl;
@@ -39,6 +43,9 @@ int mostrarOpciones(){
     return op;
 }
 
+/*Esta funcion crea un objeto libro, solicitando los datos al que use el menu
+y luego lo añade a la lista de llamada biblioteca
+además comprueba que estemos dentro de los limites de almacenamiento de la lista*/
 /*Esta funcion crea un objeto libro, solicitando los datos al que use el menu
 y luego lo añade a la lista de llamada biblioteca
 además comprueba que estemos dentro de los limites de almacenamiento de la lista*/
@@ -68,6 +75,9 @@ void agregarLibro(MaterialBibliografico* biblioteca[], int c){
 /*Esta funcion crea un objeto revista, solicitando los datos al que use el menu
 y luego lo añade a la lista de MaterialBibliografico llamado biblioteca
 además comprueba que estemos dentro de los limites de almacenamiento de la lista*/
+/*Esta funcion crea un objeto revista, solicitando los datos al que use el menu
+y luego lo añade a la lista de MaterialBibliografico llamado biblioteca
+además comprueba que estemos dentro de los limites de almacenamiento de la lista*/
 void agregarRevista(MaterialBibliografico* biblioteca[], int c){
     if(c >= 100){
         cout << "La Biblioteca está llena, NO se pueden añadir más Revistas." << endl;
@@ -90,6 +100,9 @@ void agregarRevista(MaterialBibliografico* biblioteca[], int c){
     cout << "\nLa revista se ha agregado existosamente!\n" << endl;
 }
 
+/*Esta funcion crea un objeto Usuario, solicitando los datos al que use el menu
+y luego lo añade a la lista llamada usuarios, y comprueba que estemos dentro
+de los limites de la lista antes de agregar un nuevo usuario*/
 /*Esta funcion crea un objeto Usuario, solicitando los datos al que use el menu
 y luego lo añade a la lista llamada usuarios, y comprueba que estemos dentro
 de los limites de la lista antes de agregar un nuevo usuario*/
@@ -129,6 +142,78 @@ Usuario* buscarUsuario(Usuario* usuarios[], int c) {
         }
     }
     return nullptr;
+}
+
+MaterialBibliografico* buscarMaterial(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
+    string nom, isbn, autor;                                    
+    cout << "Escriba el nombre del libro que esta buscando: ";
+    getline(cin, nom);
+    cout << "Escriba el isbn del usuario que esta buscando: ";
+    getline(cin, isbn);
+    cout << "Escriba el autor del usuario que esta buscando: ";
+    getline(cin, autor);
+    for (int i = 0; i < c; i++)                                                
+    {                  
+        cout << biblioteca[i]->getNombre() << endl;           
+        cout << nom << endl;                                            
+        if(nom == biblioteca[i]->getNombre() && isbn == biblioteca[i]->getIsbn() && autor == biblioteca[i]->getAutor())
+        {
+            return biblioteca[i];
+        }
+    }
+    return nullptr;
+}
+
+void buscarMaterialPorTitulo(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
+    string tit;                                    
+    cout << "Escriba el titulo del material que esta buscando: ";
+    cin.ignore();
+    getline(cin, tit);
+    bool existe = false; //verificar si hay uno o no
+
+    for (int i = 0; i < c; ++i) 
+    {    
+        if (Libro* libro = dynamic_cast<Libro*>(biblioteca[i])) {
+            if(tit == biblioteca[i]->getNombre()) {
+            libro->mostrarInformacion();
+            existe = true; }
+        } else if (Revista* revista = dynamic_cast<Revista*>(biblioteca[i])) {
+            if (tit == biblioteca[i]->getNombre()) {
+            revista->mostrarInformacion(); 
+            existe = true; }
+            }
+
+    }
+            if (!existe) {
+        cout << "No se encontraron materiales con el titulo especificado." << endl;
+    }
+}
+
+void buscarMaterialPorAutor(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
+    string autor;                                    
+    cout << "Escriba el autor del material que esta buscando: ";
+    cin.ignore();
+    getline(cin, autor);
+    bool existe = false; //verificar si hay uno o no
+
+    for (int i = 0; i < c; ++i) 
+    {    
+        if (Libro* libro = dynamic_cast<Libro*>(biblioteca[i])) {
+            if (autor == libro->getAutor()) {
+            libro->mostrarInformacion();
+            cout << " " << endl; 
+            existe = true; }
+        } else if (Revista* revista = dynamic_cast<Revista*>(biblioteca[i])) {
+            if (autor == revista->getAutor()) {
+            revista->mostrarInformacion();
+            cout << " " << endl; 
+            existe = true; }
+            }
+
+    }
+            if (!existe) {
+        cout << "No se encontraron materiales del autor especificado." << endl;
+    }
 }
 
 /*Esta funcion recibe como parametros una lista de materiales bibliograficos y un int que es un contador, solicitando dentro que
@@ -243,12 +328,18 @@ void eliminarUsuario(Usuario* usuarios[], int c){
         }                                                                                                             
         cout << "\nEl usuario no existe!\n" << endl;
 }
+}
 
 /*Esta funcion guarda la informacion de la lista biblioteca en el 
 archivo "Materiales.txt" para que se mantenga la información luego
 de utilizar el programa. ademas comprueba si es que existe o no el archivo
 antes de ejecutarlo*/
+/*Esta funcion guarda la informacion de la lista biblioteca en el 
+archivo "Materiales.txt" para que se mantenga la información luego
+de utilizar el programa. ademas comprueba si es que existe o no el archivo
+antes de ejecutarlo*/
 void guardarDatos(MaterialBibliografico* biblioteca[] ,int c){
+    ofstream archivo("Materiales.txt");
     ofstream archivo("Materiales.txt");
     if(!archivo){
         cout << "No se pudo guardar la información de la biblioteca ya que el archivo NO EXISTE!" << endl;
@@ -280,12 +371,19 @@ del archivo, para luego ir creando los objetos correspondientes e ir añadiendol
 de la biblioteca*/
 void cargarDatos(MaterialBibliografico* biblioteca[], int mat){
     ifstream archivo("Materiales.txt");
+/*Esta funcion carga los datos de un archivo.txt llamado "Materiales.txt"
+primero comprueba si es que existe el archivo con ese nombre, y de ser asi comienza la lectura
+del archivo, para luego ir creando los objetos correspondientes e ir añadiendolos a la lista
+de la biblioteca*/
+void cargarDatos(MaterialBibliografico* biblioteca[], int mat){
+    ifstream archivo("Materiales.txt");
     if (!archivo) {
         cout << "No se pudo abrir el archivo de los Materiales ya que NO EXISTE!\n";
         return;
     }
     int c; 
     archivo >> c;
+    mat = c;         //esto es para asignarle el numero de materiales a la variable del menu
     mat = c;         //esto es para asignarle el numero de materiales a la variable del menu
     archivo.ignore(); 
 
@@ -323,6 +421,9 @@ void cargarDatos(MaterialBibliografico* biblioteca[], int mat){
     cout << "La Biblioteca ha sido cargada exitosamente!" << endl;
 }
 
+/*Esta funcion guarda la informacion de los usuarios, tanto sus datos como los materiales que tenga
+prestado en aquel momento, comprueba si es que existe el archivo "Usuario.txt" y de ser asi 
+comienza a guardar los datos en el archivo.*/
 /*Esta funcion guarda la informacion de los usuarios, tanto sus datos como los materiales que tenga
 prestado en aquel momento, comprueba si es que existe el archivo "Usuario.txt" y de ser asi 
 comienza a guardar los datos en el archivo.*/
@@ -371,12 +472,19 @@ donde despues va creando los objetos Usuario y tambien dependiendo de cuantos ma
 los va creando y añadiendo a sus listas de materiales prestados (correspondiente a cada usuario)*/
 void cargarUsuarios(Usuario* usuarios[], int usu){
     ifstream archivo("Usuario.txt");
+/*Esta funcion verifica si existe el archivo Usuario.txt, y de ser asi comienza la lectura de el
+donde despues va creando los objetos Usuario y tambien dependiendo de cuantos materiales tenga prestado
+los va creando y añadiendo a sus listas de materiales prestados (correspondiente a cada usuario)*/
+void cargarUsuarios(Usuario* usuarios[], int usu){
+    ifstream archivo("Usuario.txt");
     if(!archivo){
         cout << "No se pudo abrir el archivo ya que NO EXISTE!" << endl;
         return;
     }
     int c;
+    int c;
     archivo >> c ;
+    usu = c;            //esto es para asignarle el numero de usuarios a la variable del menu
     usu = c;            //esto es para asignarle el numero de usuarios a la variable del menu
     archivo.ignore();
 
@@ -390,6 +498,8 @@ void cargarUsuarios(Usuario* usuarios[], int usu){
         archivo.ignore();
 
         usuarios[i] = new Usuario(nombre, id);
+        for(int j = 0; j < materialesPrestados; ++j){     //debiera ser j??
+            string tipo, nombre, isbn, autor; 
         for(int j = 0; j < materialesPrestados; ++j){     //debiera ser j??
             string tipo, nombre, isbn, autor; 
             bool prestado;
@@ -434,10 +544,14 @@ int main(){
     //aqui linea de codigo para cargar los archivos txt (creo que ya entendi como o eso espero)
     Usuario* temp;
     MaterialBibliografico* tempMat;
+    MaterialBibliografico* tempMat;
     Usuario* usuarios[100] = {nullptr};
     int contadorUsuarios = 0;
     MaterialBibliografico* biblioteca[100] = {nullptr};  //lo voy creando acá pero no se si por ejemplo quieres crear otra clase
     int contador = 0;                 //tipo biblioteca o algo asi y ahí ir creando las listas de material y usuarios
+
+    cargarDatos(biblioteca, contador);
+    cargarUsuarios(usuarios, contadorUsuarios);
 
     cargarDatos(biblioteca, contador);
     cargarUsuarios(usuarios, contadorUsuarios);
@@ -448,6 +562,8 @@ int main(){
             int opcion = mostrarOpciones();
             switch(opcion){
                 case 0:
+                    guardarDatos(biblioteca, contador);
+                    guardarUsuarios(usuarios, contadorUsuarios);
                     guardarDatos(biblioteca, contador);
                     guardarUsuarios(usuarios, contadorUsuarios);
                     cout << "Cerrando Sistema..." << endl;
@@ -463,6 +579,7 @@ int main(){
                 case 2:
                     agregarRevista(biblioteca, contador);
                     contador++;
+                    contador++;
                     break;
 
                 case 3:
@@ -474,6 +591,14 @@ int main(){
                     temp = buscarUsuario(usuarios, contadorUsuarios);                        //necesito buscarUsuario para eliminarlo en primer lugar
                     if (temp != nullptr) {
                         cout << "Usuario encontrado: " << temp->getNombre() << endl;
+                        tempMat = buscarMaterial(biblioteca, contador);
+                        if (tempMat != nullptr) {
+                            temp ->prestarMaterial(tempMat);
+                            cout << "El material " << tempMat->getNombre() << " se ha prestado exitosamente a " << temp->getNombre() << endl;
+                            } else {
+                            cout << "Material no encontrado." << endl;
+                            cout << " " << endl;
+                            }
                         tempMat = buscarMaterial(biblioteca, contador);
                         if (tempMat != nullptr) {
                             temp ->prestarMaterial(tempMat);
@@ -558,7 +683,14 @@ int main(){
     for(int i = 0; i < contador; i++){
         delete biblioteca[i];
     }
+    
+    for(int i = 0; i < contador; i++){
+        delete biblioteca[i];
+    }
 
+    for(int j = 0; j < contadorUsuarios; j++){
+        delete usuarios[j];
+    }
     for(int j = 0; j < contadorUsuarios; j++){
         delete usuarios[j];
     }
