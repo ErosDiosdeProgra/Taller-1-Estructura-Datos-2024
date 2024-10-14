@@ -12,9 +12,12 @@ int mostrarOpciones(){
     cout << "1. Agregar Libros" << endl;
     cout << "2. Agregar Revista" << endl;
     cout << "3. Registrar Usuario" << endl;
-    cout << "4. Buscar Usuario" << endl;
+    cout << "4. Agregar material a un usuario" << endl;
     cout << "5. Eliminar Usuario" << endl;
     cout << "6. Mostrar Libros/Revistas prestados a Usuarios" << endl;
+    cout << "7. Desplegar todos los materiales del sistema" << endl;
+    cout << "8. Buscar materiales por titulo" << endl;
+    cout << "9. Buscar materiales por autor" << endl;
     cout << "0. Salir del Sistema" << endl;
     cout << "Seleccione una opcion: ";
     int op;
@@ -88,7 +91,6 @@ void registrarUsuario(Usuario* usuarios[], int c){          //estoy usando la mi
     cin.ignore();
     getline(cin, nom);
     cout << "Id del usuario: ";
-    cin.ignore();
     getline(cin, id);
 
     usuarios[c] = new Usuario(nom, id);
@@ -101,7 +103,6 @@ Usuario* buscarUsuario(Usuario* usuarios[], int c) {     //lo que busco aqui es 
     cin.ignore();
     getline(cin, nom);
     cout << "Escriba el Id del usuario que esta buscando: ";
-    cin.ignore();
     getline(cin, id);
     for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
     {                                                                          // if(nom == this -> nom) { return usuarios[i] }
@@ -113,13 +114,85 @@ Usuario* buscarUsuario(Usuario* usuarios[], int c) {     //lo que busco aqui es 
     return nullptr;
 }
 
-    void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay que pedirle QUE usuario quiere eliminar, asi que hay que usar una funcion logica XD
+MaterialBibliografico* buscarMaterial(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
+    string nom, isbn, autor;                                    
+    cout << "Escriba el nombre del libro que esta buscando: ";
+    getline(cin, nom);
+    cout << "Escriba el isbn del usuario que esta buscando: ";
+    getline(cin, isbn);
+    cout << "Escriba el autor del usuario que esta buscando: ";
+    getline(cin, autor);
+    for (int i = 0; i < c; i++)                                                
+    {                  
+        cout << biblioteca[i]->getNombre() << endl;           
+        cout << nom << endl;                                            
+        if(nom == biblioteca[i]->getNombre() && isbn == biblioteca[i]->getIsbn() && autor == biblioteca[i]->getAutor())
+        {
+            return biblioteca[i];
+        }
+    }
+    return nullptr;
+}
+
+void buscarMaterialPorTitulo(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
+    string tit;                                    
+    cout << "Escriba el titulo del material que esta buscando: ";
+    cin.ignore();
+    getline(cin, tit);
+    bool existe = false; //verificar si hay uno o no
+
+    for (int i = 0; i < c; ++i) 
+    {    
+        if (Libro* libro = dynamic_cast<Libro*>(biblioteca[i])) {
+            if(tit == biblioteca[i]->getNombre()) {
+            libro->mostrarInformacion();
+            existe = true; }
+        } else if (Revista* revista = dynamic_cast<Revista*>(biblioteca[i])) {
+            if (tit == biblioteca[i]->getNombre()) {
+            revista->mostrarInformacion(); 
+            existe = true; }
+            }
+
+    }
+            if (!existe) {
+        cout << "No se encontraron materiales con el titulo especificado." << endl;
+    }
+}
+
+void buscarMaterialPorAutor(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
+    string autor;                                    
+    cout << "Escriba el autor del material que esta buscando: ";
+    cin.ignore();
+    getline(cin, autor);
+    bool existe = false; //verificar si hay uno o no
+
+    for (int i = 0; i < c; ++i) 
+    {    
+        cout << i << endl;
+        cout << biblioteca[i]->getAutor() << endl;
+        if (Libro* libro = dynamic_cast<Libro*>(biblioteca[i])) {
+            if (autor == libro->getAutor()) {
+            libro->mostrarInformacion();
+            cout << " " << endl; 
+            existe = true; }
+        } else if (Revista* revista = dynamic_cast<Revista*>(biblioteca[i])) {
+            if (autor == revista->getAutor()) {
+            revista->mostrarInformacion();
+            cout << " " << endl; 
+            existe = true; }
+            }
+
+    }
+            if (!existe) {
+        cout << "No se encontraron materiales del autor especificado." << endl;
+    }
+}
+void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay que pedirle QUE usuario quiere eliminar, asi que hay que usar una funcion logica XD
     string nom, id;                                                                           //copie y pegue la logica de arriba ya que volviendolo funcion me devolveria
         cout << "Escriba el nombre del usuario que esta buscando: ";                          //el objeto, pero es mejor eliminarla altiro en la busqueda (pq me da la i)
         cin.ignore();
         getline(cin, nom);
         cout << "Escriba el Id del usuario que esta buscando: ";
-        cin.ignore();
         getline(cin, id);
         cout <<"has llegado aqui"<<endl;
         for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
@@ -269,8 +342,8 @@ void cargarUsuarios(Usuario* usuarios[], int c){
         archivo.ignore();
 
         usuarios[i] = new Usuario(nombre, id);
-        for(int j = 0; i < materialesPrestados; ++j){
-            string tipo, nombre, isbn, autor;
+        for(int j = 0; j < materialesPrestados; ++j){     //debiera ser j??
+            string tipo, nombre, isbn, autor; 
             bool prestado;
 
             getline(archivo, tipo);
@@ -312,6 +385,7 @@ void cargarUsuarios(Usuario* usuarios[], int c){
 int main(){
     //aqui linea de codigo para cargar los archivos txt (creo que ya entendi como o eso espero)
     Usuario* temp;
+    MaterialBibliografico* tempMat;
     Usuario* usuarios[100] = {nullptr};
     int contadorUsuarios = 0;
     MaterialBibliografico* biblioteca[100] = {nullptr};  //lo voy creando acá pero no se si por ejemplo quieres crear otra clase
@@ -335,6 +409,7 @@ int main(){
 
                 case 2:
                     agregarRevista(biblioteca, contador);
+                    contador++;
                     break;
 
                 case 3:
@@ -346,6 +421,14 @@ int main(){
                     temp = buscarUsuario(usuarios, contadorUsuarios);                        //necesito buscarUsuario para eliminarlo en primer lugar
                     if (temp != nullptr) {
                         cout << "Usuario encontrado: " << temp->getNombre() << endl;
+                        tempMat = buscarMaterial(biblioteca, contador);
+                        if (tempMat != nullptr) {
+                            temp ->prestarMaterial(tempMat);
+                            cout << "El material " << tempMat->getNombre() << " se ha prestado exitosamente a " << temp->getNombre() << endl;
+                            } else {
+                            cout << "Material no encontrado." << endl;
+                            cout << " " << endl;
+                            }
                     } else {
                         cout << "Usuario no encontrado." << endl;
                         cout << " " << endl;
@@ -376,6 +459,22 @@ int main(){
                     cout << "Opción inválida. Intente nuevamente..." << endl;
                     cout << " " << endl;
                     cout << " " << endl;
+                    break;
+                case 7: 
+                for (int i = 0; i < contador; ++i) {    
+                        if (Libro* libro = dynamic_cast<Libro*>(biblioteca[i])) {
+                            libro->mostrarInformacion();
+                        } else if (Revista* revista = dynamic_cast<Revista*>(biblioteca[i])) {
+                            revista->mostrarInformacion();
+                        }
+                }
+                break;
+                case 8:
+                buscarMaterialPorTitulo(biblioteca, contador);
+                break;
+                case 9:
+                buscarMaterialPorAutor(biblioteca, contador);
+                break;
             }
         } catch (const invalid_argument& e) {
             cout << e.what() << endl; //el what devuelve un mensaje descriptivo, establecido mas arriba
@@ -386,13 +485,13 @@ int main(){
 
     //esto tengo entendido que es para liberar la memoria al finalizar la ejecucion del menú...
     //
-    //for(int i = 0; i < contador; i++){
-    //    delete biblioteca[i];
-    //}
+    for(int i = 0; i < contador; i++){
+        delete biblioteca[i];
+    }
 
-    //for(int j = 0; j < contadorUsuarios; j++){
-    //    delete usuarios[j];
-    //}
+    for(int j = 0; j < contadorUsuarios; j++){
+        delete usuarios[j];
+    }
 
     return 0;
 }
