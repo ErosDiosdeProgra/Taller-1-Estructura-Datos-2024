@@ -7,6 +7,9 @@
 #include <limits>
 using namespace std;
 
+/*Esta funcion imprime las opciones que tiene el menu
+y posee el control de errores en caso de que escriba algun dato que 
+no sea un entero*/
 int mostrarOpciones(){              
     cout << "**** Bienvenido al Sistema de Bibliotecas UCN ****" << endl;
     cout << "1. Agregar Libros" << endl;
@@ -18,6 +21,7 @@ int mostrarOpciones(){
     cout << "7. Desplegar todos los materiales del sistema" << endl;
     cout << "8. Buscar materiales por titulo" << endl;
     cout << "9. Buscar materiales por autor" << endl;
+    cout << "10. Devolver un material de un usuario" << endl;
     cout << "0. Salir del Sistema" << endl;
     cout << "Seleccione una opcion: ";
     int op;
@@ -35,6 +39,9 @@ int mostrarOpciones(){
     return op;
 }
 
+/*Esta funcion crea un objeto libro, solicitando los datos al que use el menu
+y luego lo añade a la lista de llamada biblioteca
+además comprueba que estemos dentro de los limites de almacenamiento de la lista*/
 void agregarLibro(MaterialBibliografico* biblioteca[], int c){
     if(c >= 100){
         cout << "La Biblioteca está llena, NO se pueden añadir más Libros." << endl;
@@ -58,6 +65,9 @@ void agregarLibro(MaterialBibliografico* biblioteca[], int c){
     cout << "\nEl Libro se ha agregado existosamente!\n" << endl;
 }
 
+/*Esta funcion crea un objeto revista, solicitando los datos al que use el menu
+y luego lo añade a la lista de MaterialBibliografico llamado biblioteca
+además comprueba que estemos dentro de los limites de almacenamiento de la lista*/
 void agregarRevista(MaterialBibliografico* biblioteca[], int c){
     if(c >= 100){
         cout << "La Biblioteca está llena, NO se pueden añadir más Revistas." << endl;
@@ -80,6 +90,9 @@ void agregarRevista(MaterialBibliografico* biblioteca[], int c){
     cout << "\nLa revista se ha agregado existosamente!\n" << endl;
 }
 
+/*Esta funcion crea un objeto Usuario, solicitando los datos al que use el menu
+y luego lo añade a la lista llamada usuarios, y comprueba que estemos dentro
+de los limites de la lista antes de agregar un nuevo usuario*/
 void registrarUsuario(Usuario* usuarios[], int c){          //estoy usando la misma logica que los otros, si total es crear un objeto dentro de un registro
     if(c >= 100){
         cout << "La base de usuarios está completa, NO se pueden añadir más usuarios." << endl;
@@ -97,15 +110,19 @@ void registrarUsuario(Usuario* usuarios[], int c){          //estoy usando la mi
     cout << "\nEl usuario se ha registrado existosamente!\n" << endl;
 }
 
-Usuario* buscarUsuario(Usuario* usuarios[], int c) {     //lo que busco aqui es que mediante el nombre e id que nos den
+/*Esta funcion recibe como parametros una lista de usuarios y un int que es un contador, solicitando dentro que
+se ingresen un nombre y un id con el cual, mediante una revision de la lista, se nos devolvera el puntero del objeto 
+deseado*/
+
+Usuario* buscarUsuario(Usuario* usuarios[], int c) {     
     string nom, id;
     cout << "Escriba el nombre del usuario que esta buscando: ";
     cin.ignore();
     getline(cin, nom);
     cout << "Escriba el Id del usuario que esta buscando: ";
     getline(cin, id);
-    for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
-    {                                                                          // if(nom == this -> nom) { return usuarios[i] }
+    for (int i = 0; i < c; i++)                                                
+    {                                                                          
         if(nom == usuarios[i]->getNombre() && id == usuarios[i]->getId())
         {
             return usuarios[i];
@@ -113,6 +130,10 @@ Usuario* buscarUsuario(Usuario* usuarios[], int c) {     //lo que busco aqui es 
     }
     return nullptr;
 }
+
+/*Esta funcion recibe como parametros una lista de materiales bibliograficos y un int que es un contador, solicitando dentro que
+se ingresen un nombre (titulo), isbn y un autor, lo que nos permite mediante una revision de la lista la devolucion del puntero al
+objeto deseado*/
 
 MaterialBibliografico* buscarMaterial(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
     string nom, isbn, autor;                                    
@@ -133,6 +154,10 @@ MaterialBibliografico* buscarMaterial(MaterialBibliografico* biblioteca[], int c
     }
     return nullptr;
 }
+
+/*Esta funcion recibe como parametros una lista de materiales bibliograficos y un int que es un contador, solicitando dentro que
+se ingresen un nombre (titulo), lo que nos permite mediante una revision de la lista la devolucion (con su informacion) de TODOS los
+objeto deseado mediante un casteo dinamico*/
 
 void buscarMaterialPorTitulo(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
     string tit;                                    
@@ -159,6 +184,10 @@ void buscarMaterialPorTitulo(MaterialBibliografico* biblioteca[], int c) {     /
     }
 }
 
+/*Esta funcion recibe como parametros una lista de materiales bibliograficos y un int que es un contador, solicitando dentro que
+se ingresen un autor, lo que nos permite mediante una revision de la lista la devolucion (con su informacion) de TODOS los
+objeto deseado mediante un casteo dinamico*/
+
 void buscarMaterialPorAutor(MaterialBibliografico* biblioteca[], int c) {     //si coloco un cin.ignore se me muere (se salta la primera letra)
     string autor;                                    
     cout << "Escriba el autor del material que esta buscando: ";
@@ -168,8 +197,6 @@ void buscarMaterialPorAutor(MaterialBibliografico* biblioteca[], int c) {     //
 
     for (int i = 0; i < c; ++i) 
     {    
-        cout << i << endl;
-        cout << biblioteca[i]->getAutor() << endl;
         if (Libro* libro = dynamic_cast<Libro*>(biblioteca[i])) {
             if (autor == libro->getAutor()) {
             libro->mostrarInformacion();
@@ -187,16 +214,21 @@ void buscarMaterialPorAutor(MaterialBibliografico* biblioteca[], int c) {     //
         cout << "No se encontraron materiales del autor especificado." << endl;
     }
 }
-void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay que pedirle QUE usuario quiere eliminar, asi que hay que usar una funcion logica XD
-    string nom, id;                                                                           //copie y pegue la logica de arriba ya que volviendolo funcion me devolveria
-        cout << "Escriba el nombre del usuario que esta buscando: ";                          //el objeto, pero es mejor eliminarla altiro en la busqueda (pq me da la i)
+
+/*Esta funcion recibe como parametros una lista de usuarios y un int que es un contador, solicitando dentro que
+se ingresen las credenciales (nombre e id) del usuario el cual se esta buscando eliminar, lo que nos permite mediante
+ una revision de la lista la eliminacion del puntero, a la vez que "limpia" y ordena la lista*/
+
+void eliminarUsuario(Usuario* usuarios[], int c){          
+    string nom, id;                                                                         
+        cout << "Escriba el nombre del usuario que esta buscando: ";                          
         cin.ignore();
         getline(cin, nom);
         cout << "Escriba el Id del usuario que esta buscando: ";
         getline(cin, id);
         cout <<"has llegado aqui"<<endl;
-        for (int i = 0; i < c; i++)                                                //lo vaya comparando con lo que tenga en la lista, algo como 
-        {                                                                          // if(nom == this -> nom) { return usuarios[i] }
+        for (int i = 0; i < c; i++)                                                
+        {                                                                          
             if(nom == usuarios[i]->getNombre() && id == usuarios[i]->getId())
             {
                 delete usuarios[i];
@@ -210,10 +242,14 @@ void eliminarUsuario(Usuario* usuarios[], int c){          //ta ma latero pq hay
             }
         }                                                                                                             
         cout << "\nEl usuario no existe!\n" << endl;
-    }
+}
 
+/*Esta funcion guarda la informacion de la lista biblioteca en el 
+archivo "Materiales.txt" para que se mantenga la información luego
+de utilizar el programa. ademas comprueba si es que existe o no el archivo
+antes de ejecutarlo*/
 void guardarDatos(MaterialBibliografico* biblioteca[] ,int c){
-    ofstream archivo("materiales.txt");
+    ofstream archivo("Materiales.txt");
     if(!archivo){
         cout << "No se pudo guardar la información de la biblioteca ya que el archivo NO EXISTE!" << endl;
         return;
@@ -238,14 +274,19 @@ void guardarDatos(MaterialBibliografico* biblioteca[] ,int c){
     cout << "Biblioteca guardada EXITOSAMENTE!" <<endl;
 }
 
-void cargarDatos(MaterialBibliografico* biblioteca[], int c){
-    ifstream archivo("materiales.txt");
+/*Esta funcion carga los datos de un archivo.txt llamado "Materiales.txt"
+primero comprueba si es que existe el archivo con ese nombre, y de ser asi comienza la lectura
+del archivo, para luego ir creando los objetos correspondientes e ir añadiendolos a la lista
+de la biblioteca*/
+void cargarDatos(MaterialBibliografico* biblioteca[], int mat){
+    ifstream archivo("Materiales.txt");
     if (!archivo) {
         cout << "No se pudo abrir el archivo de los Materiales ya que NO EXISTE!\n";
         return;
     }
-
+    int c; 
     archivo >> c;
+    mat = c;         //esto es para asignarle el numero de materiales a la variable del menu
     archivo.ignore(); 
 
     for (int i = 0; i < c; ++i) {
@@ -282,6 +323,9 @@ void cargarDatos(MaterialBibliografico* biblioteca[], int c){
     cout << "La Biblioteca ha sido cargada exitosamente!" << endl;
 }
 
+/*Esta funcion guarda la informacion de los usuarios, tanto sus datos como los materiales que tenga
+prestado en aquel momento, comprueba si es que existe el archivo "Usuario.txt" y de ser asi 
+comienza a guardar los datos en el archivo.*/
 void guardarUsuarios(Usuario* usuarios[], int c){
     ofstream archivo("Usuario.txt");
     if(!archivo){
@@ -322,14 +366,18 @@ void guardarUsuarios(Usuario* usuarios[], int c){
     cout << "Usuarios guardados EXISTOSAMENTE!" << endl;
 }
 
-void cargarUsuarios(Usuario* usuarios[], int c){
-    ifstream archivo("Usuarios.txt");
+/*Esta funcion verifica si existe el archivo Usuario.txt, y de ser asi comienza la lectura de el
+donde despues va creando los objetos Usuario y tambien dependiendo de cuantos materiales tenga prestado
+los va creando y añadiendo a sus listas de materiales prestados (correspondiente a cada usuario)*/
+void cargarUsuarios(Usuario* usuarios[], int usu){
+    ifstream archivo("Usuario.txt");
     if(!archivo){
         cout << "No se pudo abrir el archivo ya que NO EXISTE!" << endl;
         return;
     }
-
+    int c;
     archivo >> c ;
+    usu = c;            //esto es para asignarle el numero de usuarios a la variable del menu
     archivo.ignore();
 
     for(int i = 0; i < c; ++i){
@@ -391,12 +439,17 @@ int main(){
     MaterialBibliografico* biblioteca[100] = {nullptr};  //lo voy creando acá pero no se si por ejemplo quieres crear otra clase
     int contador = 0;                 //tipo biblioteca o algo asi y ahí ir creando las listas de material y usuarios
 
+    cargarDatos(biblioteca, contador);
+    cargarUsuarios(usuarios, contadorUsuarios);
+
     bool menu = true;
     while(menu){
         try {            
             int opcion = mostrarOpciones();
             switch(opcion){
                 case 0:
+                    guardarDatos(biblioteca, contador);
+                    guardarUsuarios(usuarios, contadorUsuarios);
                     cout << "Cerrando Sistema..." << endl;
                     cout << " " << endl;
                     menu = false;
@@ -475,6 +528,23 @@ int main(){
                 case 9:
                 buscarMaterialPorAutor(biblioteca, contador);
                 break;
+                case 10:
+                 temp = buscarUsuario(usuarios, contadorUsuarios);                        //necesito buscarUsuario para eliminarlo en primer lugar
+                    if (temp != nullptr) {
+                        cout << "Usuario encontrado: " << temp->getNombre() << endl;
+                        tempMat = buscarMaterial(biblioteca, contador);
+                        if (tempMat != nullptr) {
+                            temp ->devolverMaterial(tempMat);
+                            cout << "El material " << tempMat->getNombre() << " se ha devuelto exitosamente de parte de " << temp->getNombre() << endl;
+                            } else {
+                            cout << "Material no encontrado." << endl;
+                            cout << " " << endl;
+                            }
+                    } else {
+                        cout << "Usuario no encontrado." << endl;
+                        cout << " " << endl;
+                    }      
+                break;
             }
         } catch (const invalid_argument& e) {
             cout << e.what() << endl; //el what devuelve un mensaje descriptivo, establecido mas arriba
@@ -484,7 +554,7 @@ int main(){
     }
 
     //esto tengo entendido que es para liberar la memoria al finalizar la ejecucion del menú...
-    //
+    
     for(int i = 0; i < contador; i++){
         delete biblioteca[i];
     }
